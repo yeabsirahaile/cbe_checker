@@ -61,7 +61,9 @@ exports.validateCBETransaction = async (req, res) => {
         transactionDetails.payer,
         transactionDetails.receiverAccount,
         new Date(transactionDetails.paymentDateTime), // Convert date to a Date object
-        transactionDetails.transferredAmount,
+        parseFloat(
+          transactionDetails.transferredAmount.replace(/[^\d.-]/g, "")
+        ), // Remove non-numeric characters (including "ETB")
       ]
     );
 
