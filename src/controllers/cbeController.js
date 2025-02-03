@@ -1,4 +1,4 @@
-const { verify } = require("@jvhaile/cbe-verifier");
+const parsePDF = require("../utils/pdfParser");
 const errorHandler = require("../utils/errorHandler");
 const db = require("../config/database"); // MySQL database connection
 
@@ -22,22 +22,10 @@ exports.validateCBETransaction = async (req, res) => {
     // Remove leading zeros after "1"
     cbe_account_number = cbe_account_number.replace(/^10+/, ""); // Removes "1" and any following zeros
 
-    // Use the CBE Verifier library to verify the transaction
-    const verificationResult = await verify({
-      transactionId: transactionNumber,
-      accountNumberOfSenderOrReceiver: cbe_account_number,
-      cbeVerificationUrl: "https://apps.cbe.com.et:100/", // Update if necessary
-    });
+    const url = `https://apps.cbe.com.et:100/?id=${transactionNumber}${cbe_account_number}`;
 
-    if (verificationResult.isLeft()) {
-      return res.status(400).json({
-        success: false,
-        message: "Transaction verification failed.",
-        error: verificationResult.value,
-      });
-    }
-
-    const transactionDetails = verificationResult.value;
+    // Step 1: Parse the PDF and extract transaction details
+    const transactionDetails = await parsePDF(url);
 
     // Step 2: Validate the receiver name (case-insensitive)
     if (
@@ -53,7 +41,7 @@ exports.validateCBETransaction = async (req, res) => {
     // Step 3: Check the database for duplicate transactions
     const [existingTransaction] = await db.query(
       "SELECT * FROM cbe_transactions WHERE reference_no = ?",
-      [transactionDetails.reference]
+      [transactionDetails.referenceNo]
     );
 
     if (existingTransaction.length > 0) {
@@ -68,12 +56,12 @@ exports.validateCBETransaction = async (req, res) => {
     await db.query(
       "INSERT INTO cbe_transactions (reference_no, receiver, payer, receiver_account, payment_date, transferred_amount) VALUES (?, ?, ?, ?, ?, ?)",
       [
-        transactionDetails.reference,
+        transactionDetails.referenceNo,
         transactionDetails.receiver,
         transactionDetails.payer,
         transactionDetails.receiverAccount,
-        new Date(transactionDetails.date), // Convert date to a Date object
-        transactionDetails.amount,
+        new Date(transactionDetails.paymentDateTime), // Convert date to a Date object
+        transactionDetails.transferredAmount,
       ]
     );
 
