@@ -21,7 +21,7 @@ const AdminDashboard = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://api-payment.finishmatexpo.com/api/admin/details",
+          "http://196.189.155.154:3000/api/admin/details",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -52,7 +52,7 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        "https://api-payment.finishmatexpo.com/api/admin/update",
+        "http://196.189.155.154:3000/api/admin/update",
         { ...formData },
         { headers: { Authorization: `Bearer ${token}` } }
       );

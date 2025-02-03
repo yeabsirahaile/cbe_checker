@@ -15,7 +15,7 @@ const AdminLogin = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://api-payment.finishmatexpo.com/api/admin/login",
+        "http://196.189.155.154:3000/api/admin/login",
         formData
       );
       localStorage.setItem("token", response.data.token); // Save JWT to localStorage
