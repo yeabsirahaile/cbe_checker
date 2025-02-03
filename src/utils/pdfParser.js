@@ -3,7 +3,7 @@ const pdfParse = require("pdf-parse");
 
 // Utility function to extract a field by a key
 const extractField = (text, fieldName) => {
-  const regex = new RegExp(${fieldName}:?\\s*(.+), "i"); // Match "FieldName: value"
+  const regex = new RegExp(`${fieldName}:?\\s*(.+)`, "i"); // Match "FieldName: value"
   const match = text.match(regex);
   return match ? match[1].trim() : null;
 };
