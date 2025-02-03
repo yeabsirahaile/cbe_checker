@@ -3,9 +3,9 @@ require("dotenv").config();
 
 const db = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "payment",
-  password: process.env.DB_PASSWORD || "payment_1234",
-  database: process.env.DB_NAME || "payment",
+  user: process.env.DB_USER || "phpmyadmin",
+  password: process.env.DB_PASSWORD || "yegara",
+  database: process.env.DB_NAME || "payment_a",
 });
 
 module.exports = db;
